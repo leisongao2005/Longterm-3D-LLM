@@ -1,0 +1,66 @@
+
+
+model:
+  arch: blip2_t5
+  model_type: pretrain_flant5xl
+  use_grad_checkpoint: True
+  mask_embedding: False
+
+datasets:
+  longterm_qa: # name of the dataset builder
+    vis_processor:
+        train:
+          name: "blip2_image_train"
+          image_size: 364
+        eval:
+          name: "blip_image_eval"
+          image_size: 364
+    text_processor:
+        train:
+          name: "blip_question"
+          prompt: ""
+        eval:
+          name: "blip_question"
+    build_info:
+        annotations:
+          train:
+            storage: /home/leisongao/Longterm-3D-LLM/llava-3d_data_Feb28_v6_medium_180_scenes_18x10k_gemini_annotation_TrainQA_longtermmem_34k_training_samples_fixed.json
+          test:
+            storage: /home/leisongao/Longterm-3D-LLM/llava-3d_data_Feb28_v6_medium_180_scenes_18x10k_gemini_annotation_TrainQA_longtermmem_865_evaluation_samples_fixed.json
+          val:
+            storage: /home/leisongao/Longterm-3D-LLM/llava-3d_data_Feb28_v6_medium_180_scenes_18x10k_gemini_annotation_TrainQA_longtermmem_865_evaluation_samples_fixed.json
+run:
+  task: 3d_vqa
+  # optimizer
+  lr_sched: "linear_warmup_cosine_lr"
+  init_lr: 1e-4
+  min_lr: 1e-5
+  warmup_lr: 1e-8
+  warmup_steps: 1000
+  weight_decay: 0.05
+  max_epoch: 20 # try one, check time on 4 gpus
+  batch_size_train: 3
+  batch_size_eval: 8
+  num_workers: 2
+  accum_grad_iters: 16
+
+  max_len: 150
+  min_len: 1
+  num_beams: 5
+ 
+  inference_method: "generate"
+
+  seed: 42
+  output_dir: "output/BLIP2/longtermQA"
+
+  amp: True
+  resume_ckpt_path: pretrain_blip2_sam_flant5xl_v2.pth
+  evaluate: False
+  train_splits: ["train"]
+  valid_splits: ["val"]
+  test_splits: ["test"]
+
+  device: "cuda"
+  world_size: 4
+  dist_url: "env://"
+  distributed: True
