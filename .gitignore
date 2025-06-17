@@ -6,6 +6,7 @@
 3DLLM_BLIP2-base/tmp
 3DLLM_BLIP2-base/data
 3DLLM_BLIP2-base/pretrain_blip2_sam_flant5xl_v1.pth
+3DLLM_BLIP2-base/pretrain_blip2_sam_flant5xl_v2.pth
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

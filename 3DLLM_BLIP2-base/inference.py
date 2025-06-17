@@ -15,11 +15,11 @@ parser.add_argument("-v", "--visualize", action="store_true")
 args = parser.parse_args()
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-ckpt_path = "pretrain_blip2_sam_flant5xl_v1.pth"
+ckpt_path = "pretrain_blip2_sam_flant5xl_v2.pth"
 assert os.path.exists(ckpt_path), "Please specify the checkpoint path."
 
 obj_id_path = "assets/objaverse_subset_ids_100.json"
-obj_feat_path = "data/objaverse_feat"
+obj_feat_path = "data/objaverse_feat_subset"
 
 # ======== Step 1: Load model from checkpoint >>>>>>>>
 print("Loading model from checkpoint...")
@@ -51,7 +51,8 @@ if args.mode == "object":
     ]
     with open(obj_id_path, "r") as f:
         obj_ids = json.load(f)
-    obj_id = np.random.choice(obj_ids)
+    # obj_id = np.random.choice(obj_ids)
+    obj_id = "1ccd8feda54e467e92368083c658e171"
     print("obj_id: ", obj_id)
     feature_path = os.path.join(obj_feat_path, "features", f"{obj_id}_outside.pt")
     points_path = os.path.join(obj_feat_path, "points", f"{obj_id}_outside.npy")
@@ -74,7 +75,7 @@ else:
 
 prompt = np.random.choice(prompt)
 prompt = text_processor(prompt)
-pc_feature = torch.load(feature_path)  # (N, 1408)
+pc_feature = torch.load(feature_path, weights_only=False)  # (N, 1408)
 if isinstance(pc_feature, np.ndarray):
     pc_feature = torch.from_numpy(pc_feature)
 pc_feature = pc_feature.to(DEVICE).unsqueeze(0)  # (1, N, 1408)

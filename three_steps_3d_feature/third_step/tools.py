@@ -1,7 +1,10 @@
 import numpy as np
 from argparse import Namespace
 import quaternion
-from habitat.utils.geometry_utils import quaternion_to_list
+# from habitat.utils.geometry_utils import quaternion_to_list
+def quaternion_to_list(q: quaternion.quaternion):
+    return q.imag.tolist() + [q.real]
+
 from scipy.spatial.transform import Rotation as R
 
 

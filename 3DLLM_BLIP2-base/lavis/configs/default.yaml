@@ -7,4 +7,5 @@ env:
   # For default users
   # cache_root: "cache"
   # For internal use with persistent storage
-  cache_root: "/gpfs/u/home/LMCG/LMCGnngn/scratch/cache"
+  # cache_root: "/gpfs/u/home/LMCG/LMCGnngn/scratch/cache"
+  cache_root: /home/leisongao/Longterm-3D-LLM/3DLLM_BLIP2-base/data

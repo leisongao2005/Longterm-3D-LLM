@@ -70,13 +70,15 @@ def setup_seeds(config):
 def get_runner_class(cfg):
     """
     Get runner class from config. Default to epoch-based runner.
+    runner orchestrates the data, model, and optimizer and manages the   training loop
+
     """
     runner_cls = registry.get_runner_class(cfg.run_cfg.get("runner", "runner_base"))
 
     return runner_cls
 
 
-def main():
+def main(): 
     # allow auto-dl completes on main process without timeout when using NCCL backend.
     # os.environ["NCCL_BLOCKING_WAIT"] = "1"
 

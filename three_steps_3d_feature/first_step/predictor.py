@@ -34,6 +34,54 @@ class VisualizationDemo(object):
         else:
             self.predictor = DefaultPredictor(cfg)
 
+    def run_on_batch(self, images):
+        """
+        Args:
+            images (list of np.ndarray or tensor): a list of images of shape (H, W, C) (in BGR order).
+                This is the format used by OpenCV.
+        Returns:
+            predictions (list of dict): list of model outputs for each image.
+            vis_outputs (list of VisImage): list of visualized image outputs.
+        """
+        vis_outputs = []
+        predictions = []
+        print("check 1")
+        # If images are not already in tensor format, convert them
+        if isinstance(images, list):
+            images = [torch.from_numpy(img).permute(2, 0, 1).unsqueeze(0).float().cuda() for img in images]
+            images = torch.cat(images, dim=0)
+
+        # Get predictions for all images in the batch
+        print("check 2")
+        predictions_batch = self.predictor(images)  # Assuming predictor can handle batch input
+
+        print("check 3")
+        # Loop over each image's predictions to handle visualization and individual results
+        for i, image in enumerate(images):
+            vis_output = None
+            prediction = predictions_batch[i]
+            
+            # Convert image from OpenCV BGR format to Matplotlib RGB format
+            image_rgb = image.cpu().numpy().transpose(1, 2, 0)[:, :, ::-1]  # Convert back to BGR -> RGB
+
+            visualizer = Visualizer(image_rgb, self.metadata, instance_mode=self.instance_mode)
+            
+            if "panoptic_seg" in prediction:
+                panoptic_seg, segments_info = prediction["panoptic_seg"]
+                vis_output = visualizer.draw_panoptic_seg_predictions(panoptic_seg.to(self.cpu_device), segments_info)
+            else:
+                if "sem_seg" in prediction:
+                    vis_output = visualizer.draw_sem_seg(prediction["sem_seg"].argmax(dim=0).to(self.cpu_device))
+                if "instances" in prediction:
+                    instances = prediction["instances"].to(self.cpu_device)
+                    vis_output = visualizer.draw_instance_predictions(predictions=instances)
+
+            predictions.append(prediction)
+            vis_outputs.append(vis_output)
+
+        return predictions, vis_outputs
+
+
     def run_on_image(self, image):
         """
         Args:
@@ -45,7 +93,7 @@ class VisualizationDemo(object):
         """
         vis_output = None
         predictions = self.predictor(image)
-        print(predictions)
+        # print(predictions)
         # Convert image from OpenCV BGR format to Matplotlib RGB format.
         image = image[:, :, ::-1]
         visualizer = Visualizer(image, self.metadata, instance_mode=self.instance_mode)

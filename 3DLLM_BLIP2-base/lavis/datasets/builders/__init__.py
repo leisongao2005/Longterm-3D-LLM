@@ -7,11 +7,15 @@
 
 from lavis.datasets.builders.base_dataset_builder import load_dataset_config
 from lavis.datasets.builders.vqa_builder import ThreeDVQABuilder
+from lavis.datasets.builders.longterm_caption_builder import LongtermCaptionBuilder
+from lavis.datasets.builders.longterm_qa_builder import LongtermQABuilder
 
 from lavis.common.registry import registry
 
 __all__ = [
-    "ThreeDVQABuilder",
+    # "ThreeDVQABuilder",
+    # "LongtermCaptionBuilder",
+    "LongtermQABuilder"
 ]
 
 
